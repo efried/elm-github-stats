@@ -1,27 +1,39 @@
 port module Main exposing (..)
 
 import Browser
-import Debug exposing (..)
-import Element
+import Debug exposing (todo)
+import Element exposing (Element, text)
 import Element.Background as Background
+import Element.Border as Border exposing (rounded)
 import Element.Font as Font
 import Element.Input as Input
+import Github.Interface.Actor exposing (avatarUrl)
 import Github.Object.User as User
 import Github.Query as Query
+import Github.Scalar exposing (Uri)
 import Graphql.Http
 import Graphql.Http.GraphqlError exposing (PossiblyParsedData(..))
 import Graphql.Operation exposing (RootQuery)
+import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Html exposing (..)
 import Maybe.Extra exposing (combine)
 import RemoteData exposing (..)
+import Url exposing (toString)
 
 
 query : String -> SelectionSet Response RootQuery
 query login =
     Query.user { login = login } <|
-        SelectionSet.map GithubUser
+        SelectionSet.map2 GithubUser
             User.name
+            (User.avatarUrl
+                (\optionals ->
+                    { optionals
+                        | size = Present avatarSize
+                    }
+                )
+            )
 
 
 makeRequest : String -> String -> Cmd Msg
@@ -49,6 +61,7 @@ type alias Response =
 
 type alias GithubUser =
     { name : Maybe String
+    , avatarUrl : Github.Scalar.Uri
     }
 
 
@@ -135,6 +148,31 @@ viewUsernameForm apiToken login =
     ]
 
 
+viewAvatar : Github.Scalar.Uri -> Element msg
+viewAvatar (Github.Scalar.Uri avatarUrl) =
+    Element.image
+        [ Element.centerX
+        , Element.height <| Element.px avatarSize
+        , Element.width <| Element.px avatarSize
+        , Element.clip
+        , Border.rounded <| (avatarSize // 2)
+        ]
+        { src = avatarUrl
+        , description = "Github avatar"
+        }
+
+
+viewResult : GithubUser -> Element.Element Msg
+viewResult user =
+    Element.column
+        []
+        [ Element.text <|
+            (++) "Name: " <|
+                Maybe.withDefault "No name" user.name
+        , viewAvatar user.avatarUrl
+        ]
+
+
 viewBody : Model -> Html Msg
 viewBody model =
     Element.layout
@@ -170,34 +208,28 @@ viewBody model =
                 , Element.centerY
                 , Element.height Element.fill
                 ]
-                [ Element.text <|
-                    case model.response of
-                        RemoteData.NotAsked ->
-                            ""
+                [ case model.response of
+                    RemoteData.NotAsked ->
+                        Element.text ""
 
-                        RemoteData.Loading ->
-                            "Loading..."
+                    RemoteData.Loading ->
+                        Element.text "Loading..."
 
-                        RemoteData.Failure err ->
-                            case err of
-                                Graphql.Http.GraphqlError _ errors ->
-                                    List.head errors |> Maybe.map .message |> Maybe.withDefault "Unknown error occurred"
+                    RemoteData.Failure err ->
+                        case err of
+                            Graphql.Http.GraphqlError _ errors ->
+                                Element.text <|
+                                    (List.head errors
+                                        |> Maybe.map .message
+                                        |> Maybe.withDefault "Unknown error occurred"
+                                    )
 
-                                _ ->
-                                    "Unknown error occured"
+                            _ ->
+                                Element.text "Unknown error occured"
 
-                        RemoteData.Success response ->
-                            case response of
-                                Just user ->
-                                    case user.name of
-                                        Just name ->
-                                            "Name: " ++ name
-
-                                        Nothing ->
-                                            "No name"
-
-                                Nothing ->
-                                    "User not found"
+                    RemoteData.Success response_ ->
+                        Maybe.map viewResult response_
+                            |> Maybe.withDefault (Element.text "User not found")
                 ]
             ]
 
@@ -235,6 +267,11 @@ port loadToken : (Maybe String -> msg) -> Sub msg
 
 
 ---- UTILITY ----
+
+
+avatarSize : Int
+avatarSize =
+    100
 
 
 nonEmptyString : String -> Maybe String
