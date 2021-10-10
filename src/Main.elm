@@ -19,7 +19,6 @@ import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Html exposing (..)
 import Maybe.Extra exposing (combine)
 import RemoteData exposing (..)
-import Url exposing (toString)
 
 
 query : String -> SelectionSet Response RootQuery
