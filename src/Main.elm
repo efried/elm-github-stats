@@ -1,10 +1,9 @@
 port module Main exposing (..)
 
 import Browser
-import Debug exposing (todo)
-import Element exposing (Element, text)
+import Element exposing (Element)
 import Element.Background as Background
-import Element.Border as Border exposing (rounded)
+import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Github.Enum.RepositoryContributionType exposing (RepositoryContributionType(..))
@@ -17,9 +16,8 @@ import Github.Object.PullRequestConnection
 import Github.Object.RepositoryConnection
 import Github.Object.User as User
 import Github.Query as Query
-import Github.Scalar exposing (Uri)
+import Github.Scalar
 import Graphql.Http
-import Graphql.Http.GraphqlError exposing (PossiblyParsedData(..))
 import Graphql.Operation exposing (RootQuery)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
@@ -148,7 +146,7 @@ update msg model =
             let
                 request : Cmd Msg
                 request =
-                    case Maybe.Extra.combine [ model.apiToken, model.login ] of
+                    case combine [ model.apiToken, model.login ] of
                         Just [ apiToken, login ] ->
                             makeRequest apiToken login
 
@@ -182,7 +180,7 @@ viewUsernameForm apiToken login =
         , label = Input.labelAbove [] (Element.text "Github Login")
         }
     , [ apiToken, login ]
-        |> Maybe.Extra.combine
+        |> combine
         |> Maybe.map
             (\_ ->
                 Input.button
