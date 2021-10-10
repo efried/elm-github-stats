@@ -38,6 +38,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@commitlint/cli", "npm:12.1.4"],
             ["@commitlint/config-conventional", "npm:12.1.4"],
             ["@commitlint/prompt-cli", "npm:12.1.4"],
+            ["@dillonkearns/elm-graphql", "npm:4.2.2"],
             ["elm-live", "npm:4.0.2"],
             ["elm-tooling", "npm:1.6.0"],
             ["husky", "npm:6.0.0"]
@@ -290,6 +291,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@dillonkearns/elm-graphql", [
+        ["npm:4.2.2", {
+          "packageLocation": "./.yarn/cache/@dillonkearns-elm-graphql-npm-4.2.2-2eba17eb0d-49d2afa7b5.zip/node_modules/@dillonkearns/elm-graphql/",
+          "packageDependencies": [
+            ["@dillonkearns/elm-graphql", "npm:4.2.2"],
+            ["cross-spawn", "npm:5.1.0"],
+            ["glob", "npm:7.2.0"],
+            ["graphql-request", "virtual:2eba17eb0d23c7e7a0cfcfe9e39777f7c194d4c889a8c7e661c5faed74f4a9d291ce6367e1541e61470d8546c93b114ea44b483294946523ab460fdb008d818f#npm:3.5.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@gar/promisify", [
         ["npm:1.1.2", {
           "packageLocation": "./.yarn/cache/@gar-promisify-npm-1.1.2-2343f94380-d05081e088.zip/node_modules/@gar/promisify/",
@@ -521,6 +534,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/async-limiter-npm-1.0.1-7e6819bcdb-2b849695b4.zip/node_modules/async-limiter/",
           "packageDependencies": [
             ["async-limiter", "npm:1.0.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["asynckit", [
+        ["npm:0.4.0", {
+          "packageLocation": "./.yarn/cache/asynckit-npm-0.4.0-c718858525-7b78c451df.zip/node_modules/asynckit/",
+          "packageDependencies": [
+            ["asynckit", "npm:0.4.0"]
           ],
           "linkType": "HARD",
         }]
@@ -804,6 +826,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["combined-stream", [
+        ["npm:1.0.8", {
+          "packageLocation": "./.yarn/cache/combined-stream-npm-1.0.8-dc14d4a63a-49fa4aeb49.zip/node_modules/combined-stream/",
+          "packageDependencies": [
+            ["combined-stream", "npm:1.0.8"],
+            ["delayed-stream", "npm:1.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["commander", [
         ["npm:2.17.1", {
           "packageLocation": "./.yarn/cache/commander-npm-2.17.1-08eb1c40fa-22e7ed5b42.zip/node_modules/commander/",
@@ -921,11 +953,31 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["cross-fetch", [
+        ["npm:3.1.4", {
+          "packageLocation": "./.yarn/cache/cross-fetch-npm-3.1.4-45e4517cba-2107e5e633.zip/node_modules/cross-fetch/",
+          "packageDependencies": [
+            ["cross-fetch", "npm:3.1.4"],
+            ["node-fetch", "npm:2.6.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["cross-spawn", [
         ["npm:5.0.1", {
           "packageLocation": "./.yarn/cache/cross-spawn-npm-5.0.1-c84f4b68c9-f34b5c30b0.zip/node_modules/cross-spawn/",
           "packageDependencies": [
             ["cross-spawn", "npm:5.0.1"],
+            ["lru-cache", "npm:4.1.5"],
+            ["shebang-command", "npm:1.2.0"],
+            ["which", "npm:1.3.1"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:5.1.0", {
+          "packageLocation": "./.yarn/cache/cross-spawn-npm-5.1.0-a3e220603e-726939c995.zip/node_modules/cross-spawn/",
+          "packageDependencies": [
+            ["cross-spawn", "npm:5.1.0"],
             ["lru-cache", "npm:4.1.5"],
             ["shebang-command", "npm:1.2.0"],
             ["which", "npm:1.3.1"]
@@ -1044,6 +1096,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["delayed-stream", [
+        ["npm:1.0.0", {
+          "packageLocation": "./.yarn/cache/delayed-stream-npm-1.0.0-c5a4c4cc02-46fe6e83e2.zip/node_modules/delayed-stream/",
+          "packageDependencies": [
+            ["delayed-stream", "npm:1.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["delegates", [
         ["npm:1.0.0", {
           "packageLocation": "./.yarn/cache/delegates-npm-1.0.0-9b1942d75f-a51744d9b5.zip/node_modules/delegates/",
@@ -1098,6 +1159,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@commitlint/cli", "npm:12.1.4"],
             ["@commitlint/config-conventional", "npm:12.1.4"],
             ["@commitlint/prompt-cli", "npm:12.1.4"],
+            ["@dillonkearns/elm-graphql", "npm:4.2.2"],
             ["elm-live", "npm:4.0.2"],
             ["elm-tooling", "npm:1.6.0"],
             ["husky", "npm:6.0.0"]
@@ -1307,6 +1369,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["extract-files", [
+        ["npm:9.0.0", {
+          "packageLocation": "./.yarn/cache/extract-files-npm-9.0.0-6ee13e6aab-c31781d090.zip/node_modules/extract-files/",
+          "packageDependencies": [
+            ["extract-files", "npm:9.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["figures", [
         ["npm:1.7.0", {
           "packageLocation": "./.yarn/cache/figures-npm-1.7.0-1542644df9-d77206deba.zip/node_modules/figures/",
@@ -1380,6 +1451,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "packagePeers": [
             "debug"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["form-data", [
+        ["npm:3.0.1", {
+          "packageLocation": "./.yarn/cache/form-data-npm-3.0.1-d080d436e0-b019e8d35c.zip/node_modules/form-data/",
+          "packageDependencies": [
+            ["form-data", "npm:3.0.1"],
+            ["asynckit", "npm:0.4.0"],
+            ["combined-stream", "npm:1.0.8"],
+            ["mime-types", "npm:2.1.33"]
           ],
           "linkType": "HARD",
         }]
@@ -1541,6 +1624,31 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/graceful-fs-npm-4.2.8-37c16fc3d3-5d224c8969.zip/node_modules/graceful-fs/",
           "packageDependencies": [
             ["graceful-fs", "npm:4.2.8"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["graphql-request", [
+        ["npm:3.5.0", {
+          "packageLocation": "./.yarn/cache/graphql-request-npm-3.5.0-12846906f9-ec7b6c9b72.zip/node_modules/graphql-request/",
+          "packageDependencies": [
+            ["graphql-request", "npm:3.5.0"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:2eba17eb0d23c7e7a0cfcfe9e39777f7c194d4c889a8c7e661c5faed74f4a9d291ce6367e1541e61470d8546c93b114ea44b483294946523ab460fdb008d818f#npm:3.5.0", {
+          "packageLocation": "./.yarn/__virtual__/graphql-request-virtual-94ee7592e1/0/cache/graphql-request-npm-3.5.0-12846906f9-ec7b6c9b72.zip/node_modules/graphql-request/",
+          "packageDependencies": [
+            ["graphql-request", "virtual:2eba17eb0d23c7e7a0cfcfe9e39777f7c194d4c889a8c7e661c5faed74f4a9d291ce6367e1541e61470d8546c93b114ea44b483294946523ab460fdb008d818f#npm:3.5.0"],
+            ["@types/graphql", null],
+            ["cross-fetch", "npm:3.1.4"],
+            ["extract-files", "npm:9.0.0"],
+            ["form-data", "npm:3.0.1"],
+            ["graphql", null]
+          ],
+          "packagePeers": [
+            "@types/graphql",
+            "graphql"
           ],
           "linkType": "HARD",
         }]
@@ -2234,6 +2342,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["mime-db", [
+        ["npm:1.50.0", {
+          "packageLocation": "./.yarn/cache/mime-db-npm-1.50.0-ee51ad7b30-95fcc19c36.zip/node_modules/mime-db/",
+          "packageDependencies": [
+            ["mime-db", "npm:1.50.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["mime-types", [
+        ["npm:2.1.33", {
+          "packageLocation": "./.yarn/cache/mime-types-npm-2.1.33-41bfef7da1-05f2a0b3f1.zip/node_modules/mime-types/",
+          "packageDependencies": [
+            ["mime-types", "npm:2.1.33"],
+            ["mime-db", "npm:1.50.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["mimic-fn", [
         ["npm:2.1.0", {
           "packageLocation": "./.yarn/cache/mimic-fn-npm-2.1.0-4fbeb3abb4-d2421a3444.zip/node_modules/mimic-fn/",
@@ -2410,6 +2537,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/nice-try-npm-1.0.5-963856b16f-0b4af3b5bb.zip/node_modules/nice-try/",
           "packageDependencies": [
             ["nice-try", "npm:1.0.5"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["node-fetch", [
+        ["npm:2.6.1", {
+          "packageLocation": "./.yarn/cache/node-fetch-npm-2.6.1-46c670dbc1-91075bedd5.zip/node_modules/node-fetch/",
+          "packageDependencies": [
+            ["node-fetch", "npm:2.6.1"]
           ],
           "linkType": "HARD",
         }]
