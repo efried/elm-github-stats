@@ -82,7 +82,7 @@ update msg model =
             )
 
         EnteredLogin username ->
-            ( { model | login = Just username }, Cmd.none )
+            ( { model | login = nonEmptyString username }, Cmd.none )
 
         RequestUser ->
             let
@@ -103,6 +103,36 @@ update msg model =
 
 
 ---- VIEW ----
+
+
+viewUsernameForm : Maybe String -> Maybe String -> List (Element.Element Msg)
+viewUsernameForm apiToken login =
+    [ Input.text
+        []
+        { onChange = EnteredApiToken
+        , text = Maybe.withDefault "" apiToken
+        , placeholder = Input.placeholder [] (Element.text "Enter API Token") |> Just
+        , label = Input.labelAbove [] (Element.text "Github API Token")
+        }
+    , Input.text
+        []
+        { onChange = EnteredLogin
+        , text = Maybe.withDefault "" login
+        , placeholder = Input.placeholder [] (Element.text "Enter login") |> Just
+        , label = Input.labelAbove [] (Element.text "Github Login")
+        }
+    , [ apiToken, login ]
+        |> Maybe.Extra.combine
+        |> Maybe.map
+            (\_ ->
+                Input.button
+                    [ Background.color (Element.rgb 238 238 238), Element.centerX ]
+                    { onPress = Just RequestUser
+                    , label = Element.text "Search"
+                    }
+            )
+        |> Maybe.withDefault Element.none
+    ]
 
 
 viewBody : Model -> Html Msg
@@ -133,31 +163,7 @@ viewBody model =
                     [ Element.width Element.fill
                     , Element.spacing 16
                     ]
-                    [ Input.text
-                        []
-                        { onChange = EnteredApiToken
-                        , text = Maybe.withDefault "" model.apiToken
-                        , placeholder = Input.placeholder [] (Element.text "Enter API Token") |> Just
-                        , label = Input.labelAbove [] (Element.text "Github API Token")
-                        }
-                    , Input.text
-                        []
-                        { onChange = EnteredLogin
-                        , text = Maybe.withDefault "" model.login
-                        , placeholder = Input.placeholder [] (Element.text "Enter login") |> Just
-                        , label = Input.labelAbove [] (Element.text "Github Login")
-                        }
-                    , case Maybe.Extra.combine [ model.apiToken, model.login ] of
-                        Just [ apiToken, login ] ->
-                            Input.button
-                                [ Background.color (Element.rgb 238 238 238), Element.centerX ]
-                                { onPress = Just RequestUser
-                                , label = Element.text "Search"
-                                }
-
-                        _ ->
-                            Element.none
-                    ]
+                    (viewUsernameForm model.apiToken model.login)
                 ]
             , Element.row
                 [ Element.centerX
