@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
 import Debug exposing (..)
@@ -52,10 +52,10 @@ type alias GithubUser =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( { apiToken = Maybe.Nothing
-      , login = Maybe.Nothing
+init : String -> ( Model, Cmd Msg )
+init flags =
+    ( { apiToken = nonEmptyString flags
+      , login = Nothing
       , response = RemoteData.NotAsked
       }
     , Cmd.none
@@ -77,7 +77,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         EnteredApiToken token ->
-            ( { model | apiToken = Just token }, Cmd.none )
+            ( { model | apiToken = nonEmptyString token }
+            , saveToken token
+            )
 
         EnteredLogin username ->
             ( { model | login = Just username }, Cmd.none )
@@ -205,11 +207,34 @@ view model =
 ---- PROGRAM ----
 
 
-main : Program () Model Msg
+main : Program String Model Msg
 main =
     Browser.document
         { view = view
-        , init = \_ -> init
+        , init = init
         , update = update
         , subscriptions = always Sub.none
         }
+
+
+
+---- PORTS ----
+
+
+port saveToken : String -> Cmd msg
+
+
+port loadToken : (Maybe String -> msg) -> Sub msg
+
+
+
+---- UTILITY ----
+
+
+nonEmptyString : String -> Maybe String
+nonEmptyString str =
+    if String.isEmpty str then
+        Nothing
+
+    else
+        Just str

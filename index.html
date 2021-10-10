@@ -12,9 +12,17 @@
     <body>
         <div id="elm-app"></div>
         <script>
+            const storedData = localStorage.getItem('gh-t');
+            const flags = storedData ? storedData : "";
+
             var app = Elm.Main.init({
+                flags: flags,
                 node: document.getElementById("elm-app")
             });
+
+            app.ports.saveToken.subscribe(storage => {
+                localStorage.setItem('gh-t', storage)
+            })
         </script>
     </body>
 </html>
