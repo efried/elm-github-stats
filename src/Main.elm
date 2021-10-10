@@ -114,7 +114,7 @@ type alias GithubUser =
 
 init : String -> ( Model, Cmd Msg )
 init flags =
-    ( { apiToken = nonEmptyString flags
+    ( { apiToken = notBlank flags
       , login = Nothing
       , response = RemoteData.NotAsked
       }
@@ -137,12 +137,12 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         EnteredApiToken token ->
-            ( { model | apiToken = nonEmptyString token }
+            ( { model | apiToken = notBlank token }
             , saveToken token
             )
 
         EnteredLogin username ->
-            ( { model | login = nonEmptyString username }, Cmd.none )
+            ( { model | login = notBlank username }, Cmd.none )
 
         RequestUser ->
             let
@@ -323,11 +323,11 @@ port loadToken : (Maybe String -> msg) -> Sub msg
 
 avatarSize : Int
 avatarSize =
-    100
+    200
 
 
-nonEmptyString : String -> Maybe String
-nonEmptyString str =
+notBlank : String -> Maybe String
+notBlank str =
     if String.isEmpty str then
         Nothing
 
