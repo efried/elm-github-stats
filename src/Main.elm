@@ -7,7 +7,14 @@ import Element.Background as Background
 import Element.Border as Border exposing (rounded)
 import Element.Font as Font
 import Element.Input as Input
+import Github.Enum.RepositoryContributionType exposing (RepositoryContributionType(..))
 import Github.Interface.Actor exposing (avatarUrl)
+import Github.Object
+import Github.Object.ContributionsCollection
+import Github.Object.FollowerConnection
+import Github.Object.IssueConnection
+import Github.Object.PullRequestConnection
+import Github.Object.RepositoryConnection
 import Github.Object.User as User
 import Github.Query as Query
 import Github.Scalar exposing (Uri)
@@ -21,10 +28,41 @@ import Maybe.Extra exposing (combine)
 import RemoteData exposing (..)
 
 
+followersFragment : SelectionSet Int Github.Object.User
+followersFragment =
+    User.followers identity Github.Object.FollowerConnection.totalCount
+
+
+pullRequestsFragment : SelectionSet Int Github.Object.User
+pullRequestsFragment =
+    User.pullRequests identity Github.Object.PullRequestConnection.totalCount
+
+
+issuesFragment : SelectionSet Int Github.Object.User
+issuesFragment =
+    User.issues identity Github.Object.IssueConnection.totalCount
+
+
+repositoriesFragment : SelectionSet Int Github.Object.User
+repositoriesFragment =
+    User.repositoriesContributedTo
+        (\optionals ->
+            { optionals
+                | contributionTypes = Present [ Just Commit, Just Issue, Just PullRequest, Just Repository ]
+            }
+        )
+        Github.Object.RepositoryConnection.totalCount
+
+
+contributionsFragment : SelectionSet Int Github.Object.User
+contributionsFragment =
+    User.contributionsCollection identity Github.Object.ContributionsCollection.totalCommitContributions
+
+
 query : String -> SelectionSet Response RootQuery
 query login =
     Query.user { login = login } <|
-        SelectionSet.map2 GithubUser
+        SelectionSet.map7 GithubUser
             User.name
             (User.avatarUrl
                 (\optionals ->
@@ -33,6 +71,11 @@ query login =
                     }
                 )
             )
+            followersFragment
+            pullRequestsFragment
+            issuesFragment
+            repositoriesFragment
+            contributionsFragment
 
 
 makeRequest : String -> String -> Cmd Msg
@@ -61,6 +104,11 @@ type alias Response =
 type alias GithubUser =
     { name : Maybe String
     , avatarUrl : Github.Scalar.Uri
+    , followers : Int
+    , pullRequests : Int
+    , issues : Int
+    , repositories : Int
+    , commits : Int
     }
 
 
@@ -164,11 +212,16 @@ viewAvatar (Github.Scalar.Uri avatarUrl) =
 viewResult : GithubUser -> Element.Element Msg
 viewResult user =
     Element.column
-        []
-        [ Element.text <|
+        [ Element.spacing 8 ]
+        [ viewAvatar user.avatarUrl
+        , Element.text <|
             (++) "Name: " <|
                 Maybe.withDefault "No name" user.name
-        , viewAvatar user.avatarUrl
+        , Element.text <| "Followers: " ++ String.fromInt user.followers
+        , Element.text <| "Repositories: " ++ String.fromInt user.repositories
+        , Element.text <| "Commits: " ++ String.fromInt user.commits
+        , Element.text <| "Pull Requets: " ++ String.fromInt user.pullRequests
+        , Element.text <| "Issues: " ++ String.fromInt user.issues
         ]
 
 
