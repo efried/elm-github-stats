@@ -234,52 +234,65 @@ viewBody model =
             ]
         ]
     <|
-        Element.column
-            [ Element.width Element.fill
-            , Element.height Element.fill
+        Element.row
+            [ Element.height Element.fill
+            , Element.width Element.fill
             ]
-            [ Element.row
-                [ Element.centerX
-                , Element.paddingEach
-                    { top = 16
-                    , right = 0
-                    , bottom = 0
-                    , left = 0
-                    }
+            [ Element.column
+                [ Element.height Element.fill
+                , Element.width Element.fill
+                , Border.widthEach { bottom = 0, top = 0, left = 0, right = 8 }
+                , Border.color (Element.rgb255 94 139 222)
                 ]
-                [ Element.column
-                    [ Element.width Element.fill
-                    , Element.spacing 16
+                [ Element.row
+                    [ Element.centerX
+                    , Element.centerY
+                    , Element.paddingEach
+                        { top = 16
+                        , right = 0
+                        , bottom = 0
+                        , left = 0
+                        }
                     ]
-                    (viewUsernameForm model.apiToken model.login)
+                    [ Element.column
+                        [ Element.width Element.fill
+                        , Element.spacing 16
+                        ]
+                        (viewUsernameForm model.apiToken model.login)
+                    ]
                 ]
-            , Element.row
-                [ Element.centerX
-                , Element.centerY
-                , Element.height Element.fill
+            , Element.column
+                [ Element.height Element.fill
+                , Element.width (Element.fillPortion 2)
                 ]
-                [ case model.response of
-                    RemoteData.NotAsked ->
-                        Element.text ""
+                [ Element.row
+                    [ Element.centerX
+                    , Element.centerY
+                    , Element.height Element.fill
+                    ]
+                    [ case model.response of
+                        RemoteData.NotAsked ->
+                            Element.text ""
 
-                    RemoteData.Loading ->
-                        Element.text "Loading..."
+                        RemoteData.Loading ->
+                            Element.text "Loading..."
 
-                    RemoteData.Failure err ->
-                        case err of
-                            Graphql.Http.GraphqlError _ errors ->
-                                Element.text <|
-                                    (List.head errors
-                                        |> Maybe.map .message
-                                        |> Maybe.withDefault "Unknown error occurred"
-                                    )
+                        RemoteData.Failure err ->
+                            case err of
+                                Graphql.Http.GraphqlError _ errors ->
+                                    Element.text <|
+                                        (List.head errors
+                                            |> Maybe.map .message
+                                            |> Maybe.withDefault "Unknown error occurred"
+                                        )
 
-                            _ ->
-                                Element.text "Unknown error occured"
+                                _ ->
+                                    Element.text "Unknown error occured"
 
-                    RemoteData.Success response_ ->
-                        Maybe.map viewResult response_
-                            |> Maybe.withDefault (Element.text "User not found")
+                        RemoteData.Success response_ ->
+                            Maybe.map viewResult response_
+                                |> Maybe.withDefault (Element.text "User not found")
+                    ]
                 ]
             ]
 
