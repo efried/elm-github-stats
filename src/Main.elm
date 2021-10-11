@@ -170,21 +170,37 @@ viewUsernameForm apiToken login =
         { onChange = EnteredApiToken
         , text = Maybe.withDefault "" apiToken
         , placeholder = Input.placeholder [] (Element.text "Enter API Token") |> Just
-        , label = Input.labelAbove [] (Element.text "Github API Token")
+        , label =
+            Input.labelAbove
+                [ Font.color (Element.rgb255 255 255 255)
+                ]
+                (Element.text "Github API Token")
         }
     , Input.text
         []
         { onChange = EnteredLogin
         , text = Maybe.withDefault "" login
         , placeholder = Input.placeholder [] (Element.text "Enter login") |> Just
-        , label = Input.labelAbove [] (Element.text "Github Login")
+        , label =
+            Input.labelAbove
+                [ Font.color (Element.rgb255 255 255 255)
+                ]
+                (Element.text "Github Login")
         }
     , [ apiToken, login ]
         |> combine
         |> Maybe.map
             (\_ ->
                 Input.button
-                    [ Background.color (Element.rgb 238 238 238), Element.centerX ]
+                    [ Element.centerX
+                    , Element.width Element.fill
+                    , Element.paddingXY 16 8
+                    , Background.color (Element.rgb 255 255 255)
+                    , Border.width 1
+                    , Border.rounded 4
+                    , Border.color (Element.rgb 0 0 0)
+                    , Font.center
+                    ]
                     { onPress = Just RequestUser
                     , label = Element.text "Search"
                     }
@@ -241,8 +257,7 @@ viewBody model =
             [ Element.column
                 [ Element.height Element.fill
                 , Element.width Element.fill
-                , Border.widthEach { bottom = 0, top = 0, left = 0, right = 8 }
-                , Border.color (Element.rgb255 94 139 222)
+                , Background.color (Element.rgb255 94 139 222)
                 ]
                 [ Element.row
                     [ Element.centerX
