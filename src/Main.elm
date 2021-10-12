@@ -29,6 +29,7 @@ import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Html exposing (..)
 import Maybe.Extra exposing (combine)
+import Rank
 import RemoteData exposing (..)
 
 
@@ -280,6 +281,20 @@ viewResult user =
         , Element.text <|
             "Stargazers: "
                 ++ String.fromInt (sumMaybeInt user.repositories.stargazers)
+        , Element.text <|
+            "Rank: "
+                ++ (Rank.toString <|
+                        .rank <|
+                            Rank.rank
+                                { totalRepos = user.repositories.owned
+                                , totalCommits = user.commits
+                                , contributions = user.contributedTo
+                                , followers = user.followers
+                                , pullRequests = user.pullRequests
+                                , issues = user.issues
+                                , stargazers = sumMaybeInt user.repositories.stargazers
+                                }
+                   )
         ]
 
 
