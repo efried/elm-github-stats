@@ -6,14 +6,20 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
+import Github.Enum.OrderDirection exposing (OrderDirection(..))
+import Github.Enum.RepositoryAffiliation exposing (RepositoryAffiliation(..))
 import Github.Enum.RepositoryContributionType exposing (RepositoryContributionType(..))
+import Github.Enum.RepositoryOrderField exposing (RepositoryOrderField(..))
 import Github.Interface.Actor exposing (avatarUrl)
 import Github.Object
 import Github.Object.ContributionsCollection
 import Github.Object.FollowerConnection
 import Github.Object.IssueConnection
 import Github.Object.PullRequestConnection
+import Github.Object.Repository
 import Github.Object.RepositoryConnection
+import Github.Object.RepositoryEdge
+import Github.Object.StargazerConnection
 import Github.Object.User as User
 import Github.Query as Query
 import Github.Scalar
@@ -26,23 +32,23 @@ import Maybe.Extra exposing (combine)
 import RemoteData exposing (..)
 
 
-followersFragment : SelectionSet Int Github.Object.User
-followersFragment =
+followers : SelectionSet Int Github.Object.User
+followers =
     User.followers identity Github.Object.FollowerConnection.totalCount
 
 
-pullRequestsFragment : SelectionSet Int Github.Object.User
-pullRequestsFragment =
+pullRequests : SelectionSet Int Github.Object.User
+pullRequests =
     User.pullRequests identity Github.Object.PullRequestConnection.totalCount
 
 
-issuesFragment : SelectionSet Int Github.Object.User
-issuesFragment =
+issues : SelectionSet Int Github.Object.User
+issues =
     User.issues identity Github.Object.IssueConnection.totalCount
 
 
-repositoriesFragment : SelectionSet Int Github.Object.User
-repositoriesFragment =
+repositoriesContributedTo : SelectionSet Int Github.Object.User
+repositoriesContributedTo =
     User.repositoriesContributedTo
         (\optionals ->
             { optionals
@@ -52,15 +58,41 @@ repositoriesFragment =
         Github.Object.RepositoryConnection.totalCount
 
 
-contributionsFragment : SelectionSet Int Github.Object.User
-contributionsFragment =
+contributions : SelectionSet Int Github.Object.User
+contributions =
     User.contributionsCollection identity Github.Object.ContributionsCollection.totalCommitContributions
+
+
+repositories : SelectionSet RepositoryStat Github.Object.User
+repositories =
+    User.repositories
+        (\optionals ->
+            { optionals
+                | first = Present 100
+                , orderBy = Present { field = Stargazers, direction = Desc }
+                , ownerAffiliations = Present [ Just Owner ]
+            }
+        )
+        (SelectionSet.map2 RepositoryStat
+            Github.Object.RepositoryConnection.totalCount
+            stargazers
+        )
+
+
+stargazers : SelectionSet (List (Maybe Int)) Github.Object.RepositoryConnection
+stargazers =
+    Github.Object.RepositoryConnection.edges
+        (Github.Object.RepositoryEdge.node
+            (Github.Object.Repository.stargazers identity Github.Object.StargazerConnection.totalCount)
+        )
+        |> SelectionSet.nonNullOrFail
+        |> SelectionSet.nonNullElementsOrFail
 
 
 query : String -> SelectionSet Response RootQuery
 query login =
     Query.user { login = login } <|
-        SelectionSet.map7 GithubUser
+        SelectionSet.map8 GithubUser
             User.name
             (User.avatarUrl
                 (\optionals ->
@@ -69,11 +101,12 @@ query login =
                     }
                 )
             )
-            followersFragment
-            pullRequestsFragment
-            issuesFragment
-            repositoriesFragment
-            contributionsFragment
+            followers
+            pullRequests
+            issues
+            repositoriesContributedTo
+            contributions
+            repositories
 
 
 makeRequest : String -> String -> Cmd Msg
@@ -99,14 +132,21 @@ type alias Response =
     Maybe GithubUser
 
 
+type alias RepositoryStat =
+    { owned : Int
+    , stargazers : List (Maybe Int)
+    }
+
+
 type alias GithubUser =
     { name : Maybe String
     , avatarUrl : Github.Scalar.Uri
     , followers : Int
     , pullRequests : Int
     , issues : Int
-    , repositories : Int
+    , contributedTo : Int
     , commits : Int
+    , repositories : RepositoryStat
     }
 
 
@@ -231,11 +271,15 @@ viewResult user =
         , Element.text <|
             (++) "Name: " <|
                 Maybe.withDefault "No name" user.name
-        , Element.text <| "Followers: " ++ String.fromInt user.followers
-        , Element.text <| "Repositories: " ++ String.fromInt user.repositories
+        , Element.text <| "Repositories Owned: " ++ String.fromInt user.repositories.owned
+        , Element.text <| "Repositories Contributed To: " ++ String.fromInt user.contributedTo
         , Element.text <| "Commits: " ++ String.fromInt user.commits
         , Element.text <| "Pull Requets: " ++ String.fromInt user.pullRequests
         , Element.text <| "Issues: " ++ String.fromInt user.issues
+        , Element.text <| "Followers: " ++ String.fromInt user.followers
+        , Element.text <|
+            "Stargazers: "
+                ++ String.fromInt (sumMaybeInt user.repositories.stargazers)
         ]
 
 
@@ -359,3 +403,10 @@ notBlank str =
 
     else
         Just str
+
+
+sumMaybeInt : List (Maybe Int) -> Int
+sumMaybeInt list =
+    List.foldl (+)
+        0
+        (list |> List.map (Maybe.withDefault 0))
