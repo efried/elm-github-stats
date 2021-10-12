@@ -301,7 +301,7 @@ viewBody model =
             [ Element.column
                 [ Element.height Element.fill
                 , Element.width Element.fill
-                , Background.color (Element.rgb255 94 139 222)
+                , Background.color (Element.rgb255 27 63 131)
                 ]
                 [ Element.row
                     [ Element.centerX
