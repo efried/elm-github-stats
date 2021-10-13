@@ -268,15 +268,21 @@ statRow : String -> String -> Element.Element Msg
 statRow label stat =
     Element.row
         [ Element.width Element.fill ]
-        [ Element.el [ Element.width (Element.fillPortion 3), Element.alignLeft ] (Element.text label)
-        , Element.el [ Element.width (Element.fillPortion 1), Element.alignLeft ] (Element.text stat)
+        [ Element.el
+            [ Element.width (Element.fillPortion 6)
+            ]
+            (Element.text label)
+        , Element.el
+            [ Element.width (Element.fillPortion 1)
+            ]
+            (Element.text stat)
         ]
 
 
 viewResult : Maybe String -> GithubUser -> Element.Element Msg
 viewResult login user =
     Element.column
-        [ Element.spacing 8, Element.width (Element.px 400) ]
+        [ Element.spacing 8, Element.width (Element.px 450) ]
         [ viewAvatar user.avatarUrl
         , Element.row
             [ Element.centerX
