@@ -1,5 +1,7 @@
 module Rank exposing (..)
 
+-- Normal CDF function from https://stackoverflow.com/a/59217784
+
 
 normalCdf : Float -> Float -> Float -> Float
 normalCdf mean sigma to =
