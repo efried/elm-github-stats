@@ -223,7 +223,7 @@ viewUsernameForm apiToken login =
             , Font.size 15
             , Font.extraLight
             , Font.underline
-            , Font.color (Element.rgb 255 255 255)
+            , Font.color (Element.rgb255 255 255 255)
             ]
             { url = "https://github.com/settings/tokens"
             , label = Element.text "Create a token"
@@ -248,10 +248,10 @@ viewUsernameForm apiToken login =
                     [ Element.centerX
                     , Element.width Element.fill
                     , Element.paddingXY 16 8
-                    , Background.color (Element.rgb 255 255 255)
+                    , Background.color (Element.rgb255 255 255 255)
                     , Border.width 1
                     , Border.rounded 4
-                    , Border.color (Element.rgb 0 0 0)
+                    , Border.color (Element.rgb255 0 0 0)
                     , Font.center
                     ]
                     { onPress = Just RequestUser
@@ -286,6 +286,7 @@ statRow label stat =
             (Element.text label)
         , Element.el
             [ Element.width (Element.fillPortion 1)
+            , Font.alignLeft
             ]
             (Element.text stat)
         ]
