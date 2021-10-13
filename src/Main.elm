@@ -269,32 +269,36 @@ viewResult user =
     Element.column
         [ Element.spacing 8 ]
         [ viewAvatar user.avatarUrl
+        , Element.row
+            [ Element.centerX
+            , Font.center
+            , Font.color (Element.rgb255 27 63 131)
+            , Font.size 40
+            ]
+            [ Element.text
+                (Rank.toString <|
+                    .rank <|
+                        Rank.rank
+                            { totalRepos = user.repositories.owned
+                            , totalCommits = user.commits
+                            , contributions = user.contributedTo
+                            , followers = user.followers
+                            , pullRequests = user.pullRequests
+                            , issues = user.issues
+                            , stargazers = sumMaybeInt user.repositories.stargazers
+                            }
+                )
+            ]
         , Element.text <|
             (++) "Name: " <|
                 Maybe.withDefault "No name" user.name
-        , Element.text <| "Repositories Owned: " ++ String.fromInt user.repositories.owned
-        , Element.text <| "Repositories Contributed To: " ++ String.fromInt user.contributedTo
-        , Element.text <| "Commits: " ++ String.fromInt user.commits
-        , Element.text <| "Pull Requets: " ++ String.fromInt user.pullRequests
-        , Element.text <| "Issues: " ++ String.fromInt user.issues
-        , Element.text <| "Followers: " ++ String.fromInt user.followers
         , Element.text <|
-            "Stargazers: "
+            "Total Stars Earned: "
                 ++ String.fromInt (sumMaybeInt user.repositories.stargazers)
-        , Element.text <|
-            "Rank: "
-                ++ (Rank.toString <|
-                        .rank <|
-                            Rank.rank
-                                { totalRepos = user.repositories.owned
-                                , totalCommits = user.commits
-                                , contributions = user.contributedTo
-                                , followers = user.followers
-                                , pullRequests = user.pullRequests
-                                , issues = user.issues
-                                , stargazers = sumMaybeInt user.repositories.stargazers
-                                }
-                   )
+        , Element.text <| "Total Commits: " ++ String.fromInt user.commits
+        , Element.text <| "Total PRs: " ++ String.fromInt user.pullRequests
+        , Element.text <| "Total Issues: " ++ String.fromInt user.issues
+        , Element.text <| "Contributed to: " ++ String.fromInt user.contributedTo
         ]
 
 
