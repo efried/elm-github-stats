@@ -1,7 +1,7 @@
 port module Main exposing (..)
 
 import Browser
-import Element exposing (Element)
+import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -28,7 +28,7 @@ import Graphql.Operation exposing (RootQuery)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Html exposing (..)
-import Maybe.Extra exposing (combine)
+import Maybe.Extra exposing (combine, or)
 import Rank
 import RemoteData exposing (..)
 
@@ -250,7 +250,7 @@ viewUsernameForm apiToken login =
     ]
 
 
-viewAvatar : Github.Scalar.Uri -> Element msg
+viewAvatar : Github.Scalar.Uri -> Element.Element msg
 viewAvatar (Github.Scalar.Uri avatarUrl) =
     Element.image
         [ Element.centerX
@@ -264,10 +264,19 @@ viewAvatar (Github.Scalar.Uri avatarUrl) =
         }
 
 
-viewResult : GithubUser -> Element.Element Msg
-viewResult user =
+statRow : String -> String -> Element.Element Msg
+statRow label stat =
+    Element.row
+        [ Element.width Element.fill ]
+        [ Element.el [ Element.width (Element.fillPortion 3), Element.alignLeft ] (Element.text label)
+        , Element.el [ Element.width (Element.fillPortion 1), Element.alignLeft ] (Element.text stat)
+        ]
+
+
+viewResult : Maybe String -> GithubUser -> Element.Element Msg
+viewResult login user =
     Element.column
-        [ Element.spacing 8 ]
+        [ Element.spacing 8, Element.width (Element.px 400) ]
         [ viewAvatar user.avatarUrl
         , Element.row
             [ Element.centerX
@@ -289,16 +298,22 @@ viewResult user =
                             }
                 )
             ]
-        , Element.text <|
-            (++) "Name: " <|
-                Maybe.withDefault "No name" user.name
-        , Element.text <|
-            "Total Stars Earned: "
-                ++ String.fromInt (sumMaybeInt user.repositories.stargazers)
-        , Element.text <| "Total Commits: " ++ String.fromInt user.commits
-        , Element.text <| "Total PRs: " ++ String.fromInt user.pullRequests
-        , Element.text <| "Total Issues: " ++ String.fromInt user.issues
-        , Element.text <| "Contributed to: " ++ String.fromInt user.contributedTo
+        , Element.row
+            [ Element.alignLeft
+            , Element.width Element.fill
+            , Font.semiBold
+            ]
+            [ or user.name login
+                |> Maybe.map (\name -> Element.text (name ++ "'s Github Stats"))
+                |> Maybe.withDefault Element.none
+            ]
+        , statRow "Total Stars Earned:" <|
+            String.fromInt <|
+                sumMaybeInt user.repositories.stargazers
+        , statRow "Total Commits:" <| String.fromInt user.commits
+        , statRow "Total PRs:" <| String.fromInt user.pullRequests
+        , statRow "Total Issues:" <| String.fromInt user.issues
+        , statRow "Contributed to:" <| String.fromInt user.contributedTo
         ]
 
 
@@ -368,7 +383,7 @@ viewBody model =
                                     Element.text "Unknown error occured"
 
                         RemoteData.Success response_ ->
-                            Maybe.map viewResult response_
+                            Maybe.map (viewResult model.login) response_
                                 |> Maybe.withDefault (Element.text "User not found")
                     ]
                 ]
