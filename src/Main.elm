@@ -206,17 +206,29 @@ update msg model =
 
 viewUsernameForm : Maybe String -> Maybe String -> List (Element.Element Msg)
 viewUsernameForm apiToken login =
-    [ Input.text
-        []
-        { onChange = EnteredApiToken
-        , text = Maybe.withDefault "" apiToken
-        , placeholder = Input.placeholder [] (Element.text "Enter API Token") |> Just
-        , label =
-            Input.labelAbove
-                [ Font.color (Element.rgb255 255 255 255)
-                ]
-                (Element.text "Github API Token")
-        }
+    [ Element.column []
+        [ Input.text
+            []
+            { onChange = EnteredApiToken
+            , text = Maybe.withDefault "" apiToken
+            , placeholder = Input.placeholder [] (Element.text "Enter API Token") |> Just
+            , label =
+                Input.labelAbove
+                    [ Font.color (Element.rgb255 255 255 255)
+                    ]
+                    (Element.text "Github API Token")
+            }
+        , Element.newTabLink
+            [ Element.paddingXY 0 4
+            , Font.size 15
+            , Font.extraLight
+            , Font.underline
+            , Font.color (Element.rgb 255 255 255)
+            ]
+            { url = "https://github.com/settings/tokens"
+            , label = Element.text "Create a token"
+            }
+        ]
     , Input.text
         []
         { onChange = EnteredLogin
