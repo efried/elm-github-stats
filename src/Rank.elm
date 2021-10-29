@@ -1,6 +1,6 @@
 module Rank exposing (Rank, RankResult, rank, toString)
 
--- Normal CDF function from https://stackoverflow.com/a/59217784
+-- Normal CDF function from https://www.math.ucla.edu/~tom/distributions/normal.html?
 
 
 normalCdf : Float -> Float -> Float -> Float
