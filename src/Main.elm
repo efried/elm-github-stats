@@ -26,7 +26,7 @@ import Github.Scalar
 import Graphql.Http
 import Graphql.Operation exposing (RootQuery)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
-import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Maybe.Extra exposing (combine, or)
 import Rank
@@ -93,21 +93,24 @@ stargazers =
 query : String -> SelectionSet Response RootQuery
 query login =
     Query.user { login = login } <|
-        SelectionSet.map8 GithubUser
-            User.name
-            (User.avatarUrl
-                (\optionals ->
-                    { optionals
-                        | size = Present avatarSize
-                    }
+        (SelectionSet.succeed GithubUser
+            |> with User.name
+            |> with User.login
+            |> with
+                (User.avatarUrl
+                    (\optionals ->
+                        { optionals
+                            | size = Present avatarSize
+                        }
+                    )
                 )
-            )
-            followers
-            pullRequests
-            issues
-            repositoriesContributedTo
-            contributions
-            repositories
+            |> with followers
+            |> with pullRequests
+            |> with issues
+            |> with repositoriesContributedTo
+            |> with contributions
+            |> with repositories
+        )
 
 
 makeRequest : String -> String -> Cmd Msg
@@ -141,6 +144,7 @@ type alias RepositoryStat =
 
 type alias GithubUser =
     { name : Maybe String
+    , login : String
     , avatarUrl : Github.Scalar.Uri
     , followers : Int
     , pullRequests : Int
@@ -179,15 +183,15 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Input field token ->
+        Input field value ->
             case field of
                 ApiToken ->
-                    ( { model | apiToken = notBlank token }
-                    , saveToken token
+                    ( { model | apiToken = notBlank value }
+                    , saveToken value
                     )
 
                 Login ->
-                    ( { model | login = notBlank username }, Cmd.none )
+                    ( { model | login = notBlank value }, Cmd.none )
 
         RequestUser ->
             let
@@ -215,7 +219,7 @@ viewUsernameForm apiToken login =
     [ Element.column []
         [ Input.text
             []
-            { onChange = EnteredApiToken
+            { onChange = Input ApiToken
             , text = Maybe.withDefault "" apiToken
             , placeholder = Input.placeholder [] (Element.text "Enter API Token") |> Just
             , label =
@@ -237,7 +241,7 @@ viewUsernameForm apiToken login =
         ]
     , Input.text
         []
-        { onChange = EnteredLogin
+        { onChange = Input Login
         , text = Maybe.withDefault "" login
         , placeholder = Input.placeholder [] (Element.text "Enter login") |> Just
         , label =
@@ -328,7 +332,8 @@ viewResult login user =
             , Element.width Element.fill
             , Font.semiBold
             ]
-            [ or user.name login
+            [ user.name
+                |> or (Just user.login)
                 |> Maybe.map (\name -> Element.text (name ++ "'s Github Stats"))
                 |> Maybe.withDefault Element.none
             ]
