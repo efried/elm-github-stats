@@ -165,9 +165,13 @@ init flags =
 ---- UPDATE ----
 
 
+type Field
+    = ApiToken
+    | Login
+
+
 type Msg
-    = EnteredApiToken String
-    | EnteredLogin String
+    = Input Field String
     | RequestUser
     | GotResponse (RemoteData (Graphql.Http.Error Response) Response)
 
@@ -175,13 +179,15 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        EnteredApiToken token ->
-            ( { model | apiToken = notBlank token }
-            , saveToken token
-            )
+        Input field token ->
+            case field of
+                ApiToken ->
+                    ( { model | apiToken = notBlank token }
+                    , saveToken token
+                    )
 
-        EnteredLogin username ->
-            ( { model | login = notBlank username }, Cmd.none )
+                Login ->
+                    ( { model | login = notBlank username }, Cmd.none )
 
         RequestUser ->
             let
