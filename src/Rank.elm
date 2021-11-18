@@ -1,4 +1,4 @@
-module Rank exposing (Rank, RankResult, rank, toString)
+module Rank exposing (Rank(..), RankResult, rank, toString)
 
 -- Normal CDF function from https://www.math.ucla.edu/~tom/distributions/normal.html?
 
