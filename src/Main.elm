@@ -1,7 +1,6 @@
 port module Main exposing (..)
 
 import Browser
-import Card exposing (viewRank)
 import Element
 import Element.Background as Background
 import Element.Border as Border
@@ -304,26 +303,25 @@ statRow label stat =
         ]
 
 
-viewResult : Maybe String -> GithubUser -> Element.Element Msg
-viewResult login user =
+viewResult : GithubUser -> Element.Element Msg
+viewResult user =
     let
-        rank : Rank.Rank
+        rank : Rank.RankResult
         rank =
-            .rank <|
-                Rank.rank
-                    { totalRepos = user.repositories.owned
-                    , totalCommits = user.commits
-                    , contributions = user.contributedTo
-                    , followers = user.followers
-                    , pullRequests = user.pullRequests
-                    , issues = user.issues
-                    , stargazers = sumMaybeInt user.repositories.stargazers
-                    }
+            Rank.rank
+                { totalRepos = user.repositories.owned
+                , totalCommits = user.commits
+                , contributions = user.contributedTo
+                , followers = user.followers
+                , pullRequests = user.pullRequests
+                , issues = user.issues
+                , stargazers = sumMaybeInt user.repositories.stargazers
+                }
     in
     Element.column
         [ Element.spacing 8, Element.width (Element.px 450) ]
         [ viewAvatar user.avatarUrl
-        , viewRank rank
+        , Element.row [ Element.spacing 8 ] [ Rank.viewRank rank.rank rank.score ]
         , Element.row
             [ Element.alignLeft
             , Element.width Element.fill
@@ -392,7 +390,7 @@ viewBody model =
                     ]
                     [ case model.response of
                         RemoteData.NotAsked ->
-                            viewRank APlusPlus
+                            Element.none
 
                         RemoteData.Loading ->
                             Element.text "Loading..."
@@ -410,7 +408,7 @@ viewBody model =
                                     Element.text "Unknown error occured"
 
                         RemoteData.Success response_ ->
-                            Maybe.map (viewResult model.login) response_
+                            Maybe.map viewResult response_
                                 |> Maybe.withDefault (Element.text "User not found")
                     ]
                 ]
