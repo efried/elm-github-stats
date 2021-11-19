@@ -1,4 +1,13 @@
-module Rank exposing (Rank, RankResult, rank, toString)
+module Rank exposing (Rank(..), RankResult, rank, toString, viewRank)
+
+import Color
+import Element
+import TypedSvg exposing (..)
+import TypedSvg.Attributes exposing (..)
+import TypedSvg.Core exposing (text)
+import TypedSvg.Types exposing (..)
+
+
 
 -- Normal CDF function from https://www.math.ucla.edu/~tom/distributions/normal.html?
 
@@ -137,6 +146,72 @@ toString enum =
 
         SPlus ->
             "S+"
+
+
+
+-- VIEW
+
+
+calculateFilledCircumference : Float -> Float
+calculateFilledCircumference score =
+    let
+        c : Float
+        c =
+            pi * 45 * 2
+
+        progress : Float
+        progress =
+            100 - score
+    in
+    clamp 0 100 progress |> (\clamped -> ((100 - clamped) / 100) * c)
+
+
+viewRank : Rank -> Float -> Element.Element msg
+viewRank letterRank score =
+    Element.html <|
+        svg
+            [ width (px 450)
+            , height (px 100)
+            , x (px 0)
+            , y (px 0)
+            ]
+            [ g
+                [ transform [ Translate 225 50 ]
+                ]
+                [ circle
+                    [ cy (px 0)
+                    , r (px 45)
+                    , noFill
+                    , stroke <| Paint (Color.rgb255 172 200 229)
+                    , strokeWidth (px 5)
+                    , strokeLinecap StrokeLinecapRound
+                    ]
+                    []
+                , circle
+                    [ cy (px 0)
+                    , r (px 45)
+                    , noFill
+                    , stroke <| Paint (Color.rgb255 27 63 131)
+                    , strokeWidth (px 5)
+                    , strokeDasharray "282.74"
+                    , strokeDashoffset <| String.fromFloat <| calculateFilledCircumference score
+                    , transform [ Rotate -90 0 0 ]
+                    ]
+                    []
+                , g []
+                    [ text_
+                        [ x (px 0)
+                        , y (px 0)
+                        , alignmentBaseline AlignmentCentral
+                        , dominantBaseline DominantBaselineCentral
+                        , textAnchor AnchorMiddle
+                        , fontSize (px 40)
+                        , fill <| Paint (Color.rgb255 27 63 131)
+                        ]
+                        [ text (toString letterRank) ]
+                    ]
+                ]
+            ]
 
 
 

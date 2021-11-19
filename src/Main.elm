@@ -29,8 +29,9 @@ import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Maybe.Extra exposing (combine, or)
-import Rank
+import Rank exposing (Rank(..), rank)
 import RemoteData exposing (..)
+import Style
 
 
 followers : SelectionSet Int Github.Object.User
@@ -100,7 +101,7 @@ query login =
                 (User.avatarUrl
                     (\optionals ->
                         { optionals
-                            | size = Present avatarSize
+                            | size = Present Style.avatarSize
                         }
                     )
                 )
@@ -246,7 +247,7 @@ viewUsernameForm apiToken login =
         , placeholder = Input.placeholder [] (Element.text "Enter login") |> Just
         , label =
             Input.labelAbove
-                [ Font.color (Element.rgb255 255 255 255)
+                [ Font.color Style.white
                 ]
                 (Element.text "Github Login")
         }
@@ -258,10 +259,10 @@ viewUsernameForm apiToken login =
                     [ Element.centerX
                     , Element.width Element.fill
                     , Element.paddingXY 16 8
-                    , Background.color (Element.rgb255 255 255 255)
+                    , Background.color Style.white
                     , Border.width 1
                     , Border.rounded 4
-                    , Border.color (Element.rgb255 0 0 0)
+                    , Border.color Style.black
                     , Font.center
                     ]
                     { onPress = Just RequestUser
@@ -276,10 +277,10 @@ viewAvatar : Github.Scalar.Uri -> Element.Element msg
 viewAvatar (Github.Scalar.Uri avatarUrl) =
     Element.image
         [ Element.centerX
-        , Element.height <| Element.px avatarSize
-        , Element.width <| Element.px avatarSize
+        , Element.height <| Element.px Style.avatarSize
+        , Element.width <| Element.px Style.avatarSize
         , Element.clip
-        , Border.rounded <| (avatarSize // 2)
+        , Border.rounded <| (Style.avatarSize // 2)
         ]
         { src = avatarUrl
         , description = "Github avatar"
@@ -302,31 +303,25 @@ statRow label stat =
         ]
 
 
-viewResult : Maybe String -> GithubUser -> Element.Element Msg
-viewResult login user =
+viewResult : GithubUser -> Element.Element Msg
+viewResult user =
+    let
+        rank : Rank.RankResult
+        rank =
+            Rank.rank
+                { totalRepos = user.repositories.owned
+                , totalCommits = user.commits
+                , contributions = user.contributedTo
+                , followers = user.followers
+                , pullRequests = user.pullRequests
+                , issues = user.issues
+                , stargazers = sumMaybeInt user.repositories.stargazers
+                }
+    in
     Element.column
         [ Element.spacing 8, Element.width (Element.px 450) ]
         [ viewAvatar user.avatarUrl
-        , Element.row
-            [ Element.centerX
-            , Font.center
-            , Font.color (Element.rgb255 27 63 131)
-            , Font.size 40
-            ]
-            [ Element.text
-                (Rank.toString <|
-                    .rank <|
-                        Rank.rank
-                            { totalRepos = user.repositories.owned
-                            , totalCommits = user.commits
-                            , contributions = user.contributedTo
-                            , followers = user.followers
-                            , pullRequests = user.pullRequests
-                            , issues = user.issues
-                            , stargazers = sumMaybeInt user.repositories.stargazers
-                            }
-                )
-            ]
+        , Element.row [ Element.spacing 8 ] [ Rank.viewRank rank.rank rank.score ]
         , Element.row
             [ Element.alignLeft
             , Element.width Element.fill
@@ -365,7 +360,7 @@ viewBody model =
             [ Element.column
                 [ Element.height Element.fill
                 , Element.width Element.fill
-                , Background.color (Element.rgb255 27 63 131)
+                , Background.color Style.blue
                 ]
                 [ Element.row
                     [ Element.centerX
@@ -395,7 +390,7 @@ viewBody model =
                     ]
                     [ case model.response of
                         RemoteData.NotAsked ->
-                            Element.text ""
+                            Element.none
 
                         RemoteData.Loading ->
                             Element.text "Loading..."
@@ -413,7 +408,7 @@ viewBody model =
                                     Element.text "Unknown error occured"
 
                         RemoteData.Success response_ ->
-                            Maybe.map (viewResult model.login) response_
+                            Maybe.map viewResult response_
                                 |> Maybe.withDefault (Element.text "User not found")
                     ]
                 ]
@@ -453,11 +448,6 @@ port loadToken : (Maybe String -> msg) -> Sub msg
 
 
 ---- UTILITY ----
-
-
-avatarSize : Int
-avatarSize =
-    200
 
 
 notBlank : String -> Maybe String

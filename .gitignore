@@ -13,6 +13,9 @@ node_modules/*
 # Desktop Services Store on macOS
 .DS_Store
 
+# VS Code
+.vscode
+
 # Elm
 elm-stuff
 elm.js
