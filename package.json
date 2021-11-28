@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "api": "elm-graphql https://api.github.com/graphql --base Github",
-    "build": "mkdir -p dist; npx --no-install elm-tooling install; npx --no-install elm make src/Main.elm --optimize --output=dist/elm.js; cp index.html dist;",
+    "build": "mkdir -p dist; npm exec --package=elm-tooling -- 'elm-tooling install'; npx --no-install elm make src/Main.elm --optimize --output=dist/elm.js; cp index.html dist;",
     "commit": "commit",
     "start": "elm-live src/Main.elm --open --start-page=index.html -- --debug --output=elm.js",
     "postinstall": "husky install && elm-tooling install"
