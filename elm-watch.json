@@ -1,0 +1,10 @@
+{
+    "targets": {
+        "Elm Github Stats": {
+            "inputs": [
+                "src/Main.elm"
+            ],
+            "output": "dist/main.js"
+        }
+    }
+}
